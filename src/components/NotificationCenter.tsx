@@ -50,8 +50,8 @@ export function NotificationCenter() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 glass-panel rounded-2xl border border-slate-800 shadow-2xl z-50 overflow-hidden animate-scale-in">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900/60">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl z-[100] overflow-hidden animate-scale-in">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-950/80">
             <h4 className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
               <Bell className="w-3.5 h-3.5 text-indigo-400" /> Notifikasi Aktivitas
             </h4>

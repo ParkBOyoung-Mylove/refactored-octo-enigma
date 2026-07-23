@@ -425,7 +425,7 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-950">
-        <header className="h-16 border-b border-slate-800/80 flex items-center px-4 lg:px-8 justify-between shrink-0 bg-slate-950/60 backdrop-blur-md">
+        <header className="h-16 border-b border-slate-800/80 flex items-center px-4 lg:px-8 justify-between shrink-0 bg-slate-950/90 backdrop-blur-md relative z-40">
           <div className="flex items-center gap-3 text-xs text-slate-400">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
