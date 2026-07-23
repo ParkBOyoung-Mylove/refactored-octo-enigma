@@ -156,34 +156,34 @@ export function GuideModule() {
       {/* Role-by-Role Guide Section */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Ahnaf Card */}
-        <div className="glass-panel border border-slate-800 rounded-2xl p-5 space-y-3 bg-gradient-to-b from-indigo-950/20 to-slate-900/60">
+        <div className="glass-panel border border-amber-500/40 rounded-2xl p-5 space-y-3 bg-gradient-to-b from-amber-950/20 to-slate-900/80 shadow-lg shadow-amber-500/10">
           <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-bold text-xs">
-                A
+              <div className="w-8 h-8 rounded-xl bg-amber-500/30 border border-amber-500/50 flex items-center justify-center text-amber-300 font-extrabold text-xs">
+                ⚡ A
               </div>
               <div>
-                <h4 className="font-bold text-xs text-slate-100">Ahnaf</h4>
-                <p className="text-[10px] text-indigo-300 font-medium">Sales & Marketing (Staff)</p>
+                <h4 className="font-extrabold text-xs text-amber-300">Ahnaf (Anda)</h4>
+                <p className="text-[10px] text-amber-400/90 font-bold">Lead Programmer & Super Admin</p>
               </div>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">Staff</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-extrabold">Master Admin</span>
           </div>
 
-          <p className="text-xs text-slate-400 leading-snug">Panduan tugas harian Ahnaf:</p>
+          <p className="text-xs text-slate-300 leading-snug font-medium">Hak Akses Tertinggi & Developer Utama System:</p>
 
           <ul className="space-y-2 text-xs text-slate-300">
             <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Mengisi tugas brief pagi di <strong>Daily Routine</strong> & tandai ⭐ pada tugas Pareto.</span>
+              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <span>Memiliki **Master Access** penuh untuk mengedit, mereset, dan menghapus seluruh modul workspace.</span>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Memasukkan prospek calon klien baru di modul <strong>CRM Leads</strong>.</span>
+              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <span>Dapat mengakses seluruh fitur atasan (review brief, rating bintang, laporan analitik, & CRM quotation).</span>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Mencatat log kontak WA/Visit & membuat penawaran harga resmi (<strong>Quotation</strong>).</span>
+              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <span>Mengelola sistem arsitektur aplikasi & kontrol penuh atas seluruh data tim AndisLab.</span>
             </li>
           </ul>
         </div>

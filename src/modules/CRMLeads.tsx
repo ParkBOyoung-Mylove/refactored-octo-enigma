@@ -24,7 +24,7 @@ export function CRMLeads() {
   const [leadToPromote, setLeadToPromote] = useState<Lead | null>(null);
   const [selectedLeadForDetail, setSelectedLeadForDetail] = useState<Lead | null>(null);
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   const handleUpdateStatus = (id: string, status: StatusCRM) => {
     updateLeadStatus(id, status);

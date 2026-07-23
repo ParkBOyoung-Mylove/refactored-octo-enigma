@@ -59,9 +59,20 @@ export function Dashboard() {
       <div className="glass-panel p-6 rounded-3xl border border-slate-800 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-              {user?.role === 'admin' ? <ShieldCheck className="w-3 h-3 text-purple-400" /> : <Users className="w-3 h-3 text-blue-400" />}
-              {user?.role === 'admin' ? `Akses Atasan (${user.full_name})` : `Akses Karyawan (${user?.full_name})`}
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1">
+              {user?.role === 'superadmin' ? (
+                <span className="text-amber-400 font-extrabold flex items-center gap-1 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">
+                  <ShieldCheck className="w-3 h-3 text-amber-400" /> Akses Master: Lead Programmer & Super Admin ({user.full_name})
+                </span>
+              ) : user?.role === 'admin' ? (
+                <span className="text-purple-300 font-semibold flex items-center gap-1 bg-purple-500/20 px-2 py-0.5 rounded-full border border-purple-500/30">
+                  <ShieldCheck className="w-3 h-3 text-purple-400" /> Akses Atasan ({user.full_name})
+                </span>
+              ) : (
+                <span className="text-indigo-300 font-semibold flex items-center gap-1 bg-indigo-500/20 px-2 py-0.5 rounded-full border border-indigo-500/30">
+                  <Users className="w-3 h-3 text-blue-400" /> Akses Karyawan ({user?.full_name})
+                </span>
+              )}
             </span>
             <span className="text-xs text-slate-400 font-mono">
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}

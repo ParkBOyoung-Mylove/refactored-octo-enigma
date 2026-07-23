@@ -156,8 +156,10 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-slate-200 truncate">{user?.full_name || 'User'}</p>
                 <div className="flex items-center gap-1 text-[10px] text-slate-400">
-                  {user?.role === 'admin' ? (
-                    <span className="text-purple-400 font-bold flex items-center gap-0.5"><ShieldCheck className="w-2.5 h-2.5" /> Atasan</span>
+                  {user?.role === 'superadmin' ? (
+                    <span className="text-amber-400 font-extrabold flex items-center gap-0.5"><ShieldCheck className="w-2.5 h-2.5" /> Super Admin (Dev)</span>
+                  ) : user?.role === 'admin' ? (
+                    <span className="text-purple-400 font-bold flex items-center gap-0.5"><ShieldCheck className="w-2.5 h-2.5" /> Atasan (Admin)</span>
                   ) : (
                     <span className="text-indigo-400 font-bold flex items-center gap-0.5"><User className="w-2.5 h-2.5" /> Staff</span>
                   )}
@@ -179,11 +181,11 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
             <span className="text-slate-500 font-semibold uppercase">Switch User Tim:</span>
             <div className="grid grid-cols-3 gap-1 pt-0.5">
               <button
-                onClick={() => login('ahnaf@andislab.com', 'staff')}
-                className={cn("px-1.5 py-1 rounded text-center truncate font-medium", user?.email === 'ahnaf@andislab.com' ? "bg-indigo-600 text-white font-bold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
-                title="Ahnaf (Sales)"
+                onClick={() => login('ahnaf@andislab.com', 'superadmin')}
+                className={cn("px-1.5 py-1 rounded text-center truncate font-medium", user?.email === 'ahnaf@andislab.com' ? "bg-amber-500 text-slate-950 font-extrabold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
+                title="Ahnaf (Programmer & Super Admin)"
               >
-                Ahnaf
+                ⚡ Ahnaf
               </button>
               <button
                 onClick={() => login('kukuh@andislab.com', 'admin')}

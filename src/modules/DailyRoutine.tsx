@@ -27,7 +27,7 @@ export function DailyRoutineModule() {
   const [reviewRating, setReviewRating] = useState<number>(4);
   const [reviewFeedback, setReviewFeedback] = useState('');
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   useEffect(() => {
     const existing = routines.find(r => r.date === today && (r.user_id === user?.id || (!r.user_id && user?.id === 'usr-ahnaf')));

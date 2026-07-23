@@ -3,7 +3,7 @@ export type KategoriKlien = 'Industri/Manufaktur' | 'Pendidikan/Universitas' | '
 export type StatusCRM = 'New' | 'Contacted' | 'Proposal/RFQ' | 'Tender/e-Katalog' | 'Won' | 'Lost';
 export type TipePesanan = 'Ready Stock' | 'Pre-Order' | 'Custom Furniture';
 export type StatusTask = 'Backlog' | 'In Progress' | 'Review' | 'Done';
-export type UserRole = 'admin' | 'staff';
+export type UserRole = 'superadmin' | 'admin' | 'staff';
 
 export type ContactMethod = 'WhatsApp' | 'Telepon' | 'Email' | 'Visit' | 'Meeting';
 export type QuotationStatus = 'Draft' | 'Sent' | 'Revised' | 'Accepted' | 'Rejected' | 'Expired';

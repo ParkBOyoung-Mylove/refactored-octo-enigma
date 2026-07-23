@@ -97,14 +97,16 @@ export function LoginScreen() {
           </p>
           <div className="space-y-2">
             <button
-              onClick={() => handleSelectQuickUser('ahnaf@andislab.com', 'staff')}
-              className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 hover:bg-slate-900 border border-slate-800/60 flex items-center justify-between text-xs transition-colors"
+              onClick={() => handleSelectQuickUser('ahnaf@andislab.com', 'superadmin')}
+              className="w-full text-left p-2.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-amber-500/30 flex items-center justify-between text-xs transition-all shadow-md shadow-amber-500/10"
             >
               <div>
-                <p className="font-semibold text-slate-200">Ahnaf (Sales & Marketing)</p>
-                <p className="text-[11px] text-slate-500">ahnaf@andislab.com</p>
+                <p className="font-bold text-amber-300 flex items-center gap-1">
+                  ⚡ Ahnaf (Programmer & Super Admin)
+                </p>
+                <p className="text-[11px] text-slate-400">ahnaf@andislab.com</p>
               </div>
-              <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium text-[10px]">Staff</span>
+              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-extrabold text-[10px] border border-amber-500/40">Super Admin</span>
             </button>
 
             <button

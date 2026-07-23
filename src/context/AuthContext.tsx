@@ -18,9 +18,9 @@ const DEFAULT_TEAM_USERS: Record<string, UserProfile> = {
   'ahnaf@andislab.com': {
     id: 'usr-ahnaf',
     email: 'ahnaf@andislab.com',
-    full_name: 'Ahnaf',
-    role: 'staff',
-    position: 'Sales & Marketing'
+    full_name: 'Ahnaf (Programmer & Super Admin)',
+    role: 'superadmin',
+    position: 'Lead Programmer & System Architect'
   },
   'kukuh@andislab.com': {
     id: 'usr-kukuh',
