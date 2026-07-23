@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useAuth } from '../context/AuthContext';
 import { ActivityLog } from '../components/ActivityLog';
-import { CheckCircle2, Circle, Star, Target, Users, Calendar, AlertCircle, ShieldCheck, Sparkles, FileText } from 'lucide-react';
+import { CheckCircle2, Circle, Star, Target, Users, Calendar, AlertCircle, ShieldCheck, Sparkles, FileText, Trash2 } from 'lucide-react';
 import { cn } from '../components/ConfirmModal';
 
 export function Dashboard() {
-  const { tasks, leads, routines, saveRoutine, quotations } = useWorkspace();
+  const { tasks, leads, routines, saveRoutine, quotations, resetTotalWorkspace } = useWorkspace();
   const { user } = useAuth();
   
   const today = new Date().toISOString().split('T')[0];
@@ -96,7 +96,20 @@ export function Dashboard() {
         </div>
 
         <div className="relative z-10 flex items-center gap-3">
-          <div className="text-right">
+          <button
+            onClick={() => {
+              if (window.confirm('Apakah Anda yakin ingin mengosongkan SELURUH data workspace (0 tugas, 0 leads, 0 quotation, 0 riwayat aktivitas) agar 100% bersih dari data sampel awal?')) {
+                resetTotalWorkspace();
+              }
+            }}
+            className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="Bersihkan seluruh data sampel awal"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+            <span>Reset Total (Clean 100%)</span>
+          </button>
+
+          <div className="text-right pl-2 border-l border-slate-800">
             <p className="text-[10px] text-slate-500 font-semibold uppercase">Pencapaian Pareto</p>
             <p className="text-xl font-extrabold text-amber-400">{paretoProgress}%</p>
           </div>

@@ -60,15 +60,34 @@ interface WorkspaceContextType {
   
   // Activity Action
   logActivity: (action: ActivityAction, detail: string) => void;
+
+  // Total Reset Action
+  resetTotalWorkspace: () => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
-// Clear any old legacy mock keys from localStorage
+// Dummy Data Patterns to Purge Completely
+const DUMMY_PATTERNS = [
+  'quo-1', 't-1', 't-2', 't-3', 'l-1', 'l-2', 'cl-1', 'sn-1', 'notif-1',
+  'Andis', 'Universitas Indonesia', 'PDAM', 'Pyrex', 'Kimia Farma',
+  'Fume Hood', 'Lemari Asam', 'Standard Operating Procedure', 'SOP'
+];
+
+const isDummyDataStr = (str: string | null) => {
+  if (!str) return false;
+  return DUMMY_PATTERNS.some(pat => str.toLowerCase().includes(pat.toLowerCase()));
+};
+
+// Forcefully clear all legacy dummy keys from localStorage
 if (typeof window !== 'undefined') {
-  ['andislab_quotations', 'andislab_tasks', 'andislab_leads', 'andislab_activities', 'andislab_contact_logs'].forEach(key => {
+  [
+    'andislab_quotations', 'andislab_tasks', 'andislab_leads',
+    'andislab_activities', 'andislab_contact_logs', 'andislab_daily',
+    'andislab_comments', 'andislab_shared_notes', 'andislab_notifications'
+  ].forEach(key => {
     const dataStr = localStorage.getItem(key);
-    if (dataStr && (dataStr.includes('quo-1') || dataStr.includes('t-1') || dataStr.includes('l-1') || dataStr.includes('Andis (Staff)'))) {
+    if (isDummyDataStr(dataStr)) {
       localStorage.removeItem(key);
     }
   });
@@ -79,67 +98,83 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = localStorage.getItem('andislab_tasks');
-    if (!saved) return INITIAL_TASKS;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_TASKS;
     try {
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.filter(t => t.id !== 't-1' && t.id !== 't-2' && t.id !== 't-3') : INITIAL_TASKS;
+      return Array.isArray(parsed) ? parsed.filter(t => !isDummyDataStr(JSON.stringify(t))) : INITIAL_TASKS;
     } catch { return INITIAL_TASKS; }
   });
 
   const [leads, setLeads] = useState<Lead[]>(() => {
     const saved = localStorage.getItem('andislab_leads');
-    if (!saved) return INITIAL_LEADS;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_LEADS;
     try {
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.filter(l => l.id !== 'l-1' && l.id !== 'l-2') : INITIAL_LEADS;
+      return Array.isArray(parsed) ? parsed.filter(l => !isDummyDataStr(JSON.stringify(l))) : INITIAL_LEADS;
     } catch { return INITIAL_LEADS; }
   });
 
   const [routines, setRoutines] = useState<DailyRoutine[]>(() => {
     const saved = localStorage.getItem('andislab_daily');
-    return saved ? JSON.parse(saved) : [];
+    if (!saved || isDummyDataStr(saved)) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed.filter(r => !isDummyDataStr(JSON.stringify(r))) : [];
+    } catch { return []; }
   });
 
   const [activityLog, setActivityLog] = useState<ActivityEntry[]>(() => {
     const saved = localStorage.getItem('andislab_activities');
-    if (!saved) return [];
+    if (!saved || isDummyDataStr(saved)) return [];
     try {
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.filter(a => !a.detail.includes('Andis (Staff)')) : [];
+      return Array.isArray(parsed) ? parsed.filter(a => !isDummyDataStr(JSON.stringify(a))) : [];
     } catch { return []; }
   });
 
   const [contactLogs, setContactLogs] = useState<ContactLog[]>(() => {
     const saved = localStorage.getItem('andislab_contact_logs');
-    if (!saved) return INITIAL_CONTACT_LOGS;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_CONTACT_LOGS;
     try {
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.filter(c => c.id !== 'cl-1') : INITIAL_CONTACT_LOGS;
+      return Array.isArray(parsed) ? parsed.filter(c => !isDummyDataStr(JSON.stringify(c))) : INITIAL_CONTACT_LOGS;
     } catch { return INITIAL_CONTACT_LOGS; }
   });
 
   const [quotations, setQuotations] = useState<Quotation[]>(() => {
     const saved = localStorage.getItem('andislab_quotations');
-    if (!saved) return INITIAL_QUOTATIONS;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_QUOTATIONS;
     try {
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.filter(q => q.id !== 'quo-1') : INITIAL_QUOTATIONS;
+      return Array.isArray(parsed) ? parsed.filter(q => !isDummyDataStr(JSON.stringify(q))) : INITIAL_QUOTATIONS;
     } catch { return INITIAL_QUOTATIONS; }
   });
 
   const [comments, setComments] = useState<Comment[]>(() => {
     const saved = localStorage.getItem('andislab_comments');
-    return saved ? JSON.parse(saved) : [];
+    if (!saved || isDummyDataStr(saved)) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed.filter(c => !isDummyDataStr(JSON.stringify(c))) : [];
+    } catch { return []; }
   });
 
   const [sharedNotes, setSharedNotes] = useState<SharedNote[]>(() => {
     const saved = localStorage.getItem('andislab_shared_notes');
-    return saved ? JSON.parse(saved) : INITIAL_NOTES;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_NOTES;
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed.filter(n => !isDummyDataStr(JSON.stringify(n))) : INITIAL_NOTES;
+    } catch { return INITIAL_NOTES; }
   });
 
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     const saved = localStorage.getItem('andislab_notifications');
-    return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+    if (!saved || isDummyDataStr(saved)) return INITIAL_NOTIFICATIONS;
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed.filter(n => !isDummyDataStr(JSON.stringify(n))) : INITIAL_NOTIFICATIONS;
+    } catch { return INITIAL_NOTIFICATIONS; }
   });
 
   // Offline Cache Sync
@@ -458,6 +493,26 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     logActivity('DAILY_ROUTINE', `Tugas rutin dikirim ke Kanban: ${dailyTask.title}`);
   };
 
+  const resetTotalWorkspace = () => {
+    setTasks([]);
+    setLeads([]);
+    setRoutines([]);
+    setActivityLog([]);
+    setContactLogs([]);
+    setQuotations([]);
+    setComments([]);
+    setSharedNotes([]);
+    setNotifications([]);
+
+    if (typeof window !== 'undefined') {
+      [
+        'andislab_quotations', 'andislab_tasks', 'andislab_leads',
+        'andislab_activities', 'andislab_contact_logs', 'andislab_daily',
+        'andislab_comments', 'andislab_shared_notes', 'andislab_notifications'
+      ].forEach(key => localStorage.removeItem(key));
+    }
+  };
+
   return (
     <WorkspaceContext.Provider value={{
       tasks, leads, routines, activityLog, contactLogs, quotations, comments, sharedNotes, notifications,
@@ -467,7 +522,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       addComment, addSharedNote, updateSharedNote, deleteSharedNote,
       saveRoutine, deleteDailyTask, clearDailyRoutine, reviewDailyRoutine, promoteDailyToKanban,
       markNotificationRead, addNotification,
-      logActivity
+      logActivity, resetTotalWorkspace
     }}>
       {children}
     </WorkspaceContext.Provider>
