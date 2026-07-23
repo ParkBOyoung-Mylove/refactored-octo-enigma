@@ -15,6 +15,7 @@ export interface UserProfile {
   role: UserRole;
   position?: string;
   avatar_url?: string;
+  pin?: string;
 }
 
 export interface Task {

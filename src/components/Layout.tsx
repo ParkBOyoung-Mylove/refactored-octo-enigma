@@ -19,7 +19,29 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   
   const { tasks, leads, routines, sharedNotes } = useWorkspace();
-  const { user, logout, login } = useAuth();
+  const { user, logout, verifyPinAndLogin } = useAuth();
+
+  const [switchTargetEmail, setSwitchTargetEmail] = useState<string | null>(null);
+  const [switchPinInput, setSwitchPinInput] = useState('');
+  const [switchError, setSwitchError] = useState('');
+
+  const handleRequestSwitch = (targetEmail: string) => {
+    if (user?.email === targetEmail) return;
+    setSwitchTargetEmail(targetEmail);
+    setSwitchPinInput('');
+    setSwitchError('');
+  };
+
+  const handleConfirmSwitch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!switchTargetEmail) return;
+    const res = verifyPinAndLogin(switchTargetEmail, switchPinInput);
+    if (res.success) {
+      setSwitchTargetEmail(null);
+    } else {
+      setSwitchError(res.error || 'PIN Salah!');
+    }
+  };
   
   const today = new Date().toISOString().split('T')[0];
   const todayRoutine = routines.find(r => r.date === today && (r.user_id === user?.id || (!r.user_id && user?.id === 'usr-ahnaf')));
@@ -181,22 +203,22 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
             <span className="text-slate-500 font-semibold uppercase">Switch User Tim:</span>
             <div className="grid grid-cols-3 gap-1 pt-0.5">
               <button
-                onClick={() => login('ahnaf@andislab.com', 'superadmin')}
-                className={cn("px-1.5 py-1 rounded text-center truncate font-medium", user?.email === 'ahnaf@andislab.com' ? "bg-amber-500 text-slate-950 font-extrabold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
+                onClick={() => handleRequestSwitch('ahnaf@andislab.com')}
+                className={cn("px-1.5 py-1 rounded text-center truncate font-medium transition-all", user?.email === 'ahnaf@andislab.com' ? "bg-amber-500 text-slate-950 font-extrabold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
                 title="Ahnaf (Programmer & Super Admin)"
               >
                 ⚡ Ahnaf
               </button>
               <button
-                onClick={() => login('kukuh@andislab.com', 'admin')}
-                className={cn("px-1.5 py-1 rounded text-center truncate font-medium", user?.email === 'kukuh@andislab.com' ? "bg-purple-600 text-white font-bold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
+                onClick={() => handleRequestSwitch('kukuh@andislab.com')}
+                className={cn("px-1.5 py-1 rounded text-center truncate font-medium transition-all", user?.email === 'kukuh@andislab.com' ? "bg-purple-600 text-white font-bold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
                 title="Mas Kukuh (Manager)"
               >
                 M.Kukuh
               </button>
               <button
-                onClick={() => login('setiyo@andislab.com', 'admin')}
-                className={cn("px-1.5 py-1 rounded text-center truncate font-medium", user?.email === 'setiyo@andislab.com' ? "bg-emerald-600 text-white font-bold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
+                onClick={() => handleRequestSwitch('setiyo@andislab.com')}
+                className={cn("px-1.5 py-1 rounded text-center truncate font-medium transition-all", user?.email === 'setiyo@andislab.com' ? "bg-emerald-600 text-white font-bold" : "bg-slate-900 text-slate-400 hover:text-slate-200")}
                 title="Pak Setiyo (Director)"
               >
                 P.Setiyo
@@ -205,6 +227,57 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
           </div>
         </div>
       </aside>
+
+      {/* Switch Account PIN Verification Modal */}
+      {switchTargetEmail && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-sm glass-panel p-6 rounded-3xl border border-indigo-500/40 bg-slate-900 shadow-2xl space-y-4 animate-scale-in">
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-100">Beralih Akun Tim</h3>
+              <p className="text-xs text-slate-400">
+                Masukkan PIN Keamanan untuk beralih ke akun <strong className="text-indigo-300">{switchTargetEmail.split('@')[0].toUpperCase()}</strong>
+              </p>
+            </div>
+
+            {switchError && (
+              <div className="p-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs text-center font-medium">
+                {switchError}
+              </div>
+            )}
+
+            <form onSubmit={handleConfirmSwitch} className="space-y-3">
+              <input
+                type="password"
+                maxLength={6}
+                value={switchPinInput}
+                onChange={(e) => setSwitchPinInput(e.target.value)}
+                placeholder="PIN 6-digit"
+                autoFocus
+                className="w-full text-center tracking-[0.5em] text-lg font-mono py-2 bg-slate-950 border border-indigo-500/50 rounded-xl text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSwitchTargetEmail(null)}
+                  className="w-1/2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-600/30"
+                >
+                  Konfirmasi PIN
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-950">

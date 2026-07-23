@@ -7,34 +7,39 @@ interface AuthContextType {
   isLoading: boolean;
   isStandaloneMode: boolean;
   login: (email: string, role?: UserRole) => Promise<void>;
+  verifyPinAndLogin: (email: string, pin: string) => { success: boolean; error?: string };
+  updateUserPin: (email: string, newPin: string) => void;
   logout: () => void;
   switchRole: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Default team users for AndisLab Workspace
+// Default team users for AndisLab Workspace with Security PINs
 const DEFAULT_TEAM_USERS: Record<string, UserProfile> = {
   'ahnaf@andislab.com': {
     id: 'usr-ahnaf',
     email: 'ahnaf@andislab.com',
     full_name: 'Ahnaf (Programmer & Super Admin)',
     role: 'superadmin',
-    position: 'Lead Programmer & System Architect'
+    position: 'Lead Programmer & System Architect',
+    pin: '123456'
   },
   'kukuh@andislab.com': {
     id: 'usr-kukuh',
     email: 'kukuh@andislab.com',
     full_name: 'Mas Kukuh',
     role: 'admin',
-    position: 'Manager Sales & Operasional'
+    position: 'Manager Sales & Operasional',
+    pin: '123456'
   },
   'setiyo@andislab.com': {
     id: 'usr-setiyo',
     email: 'setiyo@andislab.com',
     full_name: 'Pak Setiyo',
     role: 'admin',
-    position: 'Director & General Manager'
+    position: 'Director & General Manager',
+    pin: '123456'
   }
 };
 
@@ -112,6 +117,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const verifyPinAndLogin = (email: string, inputPin: string): { success: boolean; error?: string } => {
+    const targetUser = DEFAULT_TEAM_USERS[email];
+    if (!targetUser) {
+      return { success: false, error: 'Email akun tidak terdaftar di sistem Tim AndisLab.' };
+    }
+
+    // Check custom PIN saved in localStorage first, otherwise fall back to targetUser.pin
+    const customPinKey = `andislab_pin_${email}`;
+    const storedPin = localStorage.getItem(customPinKey) || targetUser.pin || '123456';
+
+    if (inputPin !== storedPin) {
+      return { success: false, error: '⛔ PIN Keamanan Salah! Akses akun ditolak.' };
+    }
+
+    setUser(targetUser);
+    localStorage.setItem('andislab_user', JSON.stringify(targetUser));
+    return { success: true };
+  };
+
+  const updateUserPin = (email: string, newPin: string) => {
+    if (!newPin || newPin.length < 4) return;
+    localStorage.setItem(`andislab_pin_${email}`, newPin);
+    if (user && user.email === email) {
+      setUser({ ...user, pin: newPin });
+    }
+  };
+
   const login = async (email: string, role: UserRole = 'staff') => {
     setIsLoading(true);
     if (!isSupabaseConfigured) {
@@ -154,7 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isStandaloneMode, login, logout, switchRole }}>
+    <AuthContext.Provider value={{ user, isLoading, isStandaloneMode, login, verifyPinAndLogin, updateUserPin, logout, switchRole }}>
       {children}
     </AuthContext.Provider>
   );
