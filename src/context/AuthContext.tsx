@@ -8,6 +8,7 @@ interface AuthContextType {
   isStandaloneMode: boolean;
   login: (email: string, role?: UserRole) => Promise<void>;
   verifyPinAndLogin: (email: string, pin: string) => { success: boolean; error?: string };
+  getUserPin: (email: string) => string;
   updateUserPin: (email: string, newPin: string) => void;
   logout: () => void;
   switchRole: (role: UserRole) => void;
@@ -136,6 +137,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   };
 
+  const getUserPin = (email: string): string => {
+    const customPinKey = `andislab_pin_${email}`;
+    const targetUser = DEFAULT_TEAM_USERS[email];
+    return localStorage.getItem(customPinKey) || targetUser?.pin || '123456';
+  };
+
   const updateUserPin = (email: string, newPin: string) => {
     if (!newPin || newPin.length < 4) return;
     localStorage.setItem(`andislab_pin_${email}`, newPin);
@@ -186,7 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isStandaloneMode, login, verifyPinAndLogin, updateUserPin, logout, switchRole }}>
+    <AuthContext.Provider value={{ user, isLoading, isStandaloneMode, login, verifyPinAndLogin, getUserPin, updateUserPin, logout, switchRole }}>
       {children}
     </AuthContext.Provider>
   );

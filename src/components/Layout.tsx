@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { Menu, X, Kanban, Users, Bot, CheckSquare, Search, Home, LogOut, ShieldCheck, User, FileText, BarChart3, Layers, BookOpen } from 'lucide-react';
+import { Menu, X, Kanban, Users, Bot, CheckSquare, Search, Home, LogOut, ShieldCheck, User, FileText, BarChart3, Layers, BookOpen, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from './ConfirmModal';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useAuth } from '../context/AuthContext';
@@ -19,11 +19,19 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   
   const { tasks, leads, routines, sharedNotes } = useWorkspace();
-  const { user, logout, verifyPinAndLogin } = useAuth();
+  const { user, logout, verifyPinAndLogin, getUserPin, updateUserPin } = useAuth();
 
   const [switchTargetEmail, setSwitchTargetEmail] = useState<string | null>(null);
   const [switchPinInput, setSwitchPinInput] = useState('');
   const [switchError, setSwitchError] = useState('');
+
+  // Change PIN states
+  const [isChangePinOpen, setIsChangePinOpen] = useState(false);
+  const [oldPin, setOldPin] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [changePinError, setChangePinError] = useState('');
+  const [changePinSuccess, setChangePinSuccess] = useState('');
 
   const handleRequestSwitch = (targetEmail: string) => {
     if (user?.email === targetEmail) return;
@@ -41,6 +49,40 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
     } else {
       setSwitchError(res.error || 'PIN Salah!');
     }
+  };
+
+  const handleSaveNewPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangePinError('');
+    setChangePinSuccess('');
+
+    if (!user) return;
+
+    const currentPin = getUserPin(user.email);
+    if (oldPin !== currentPin) {
+      setChangePinError('⛔ PIN Lama yang Anda masukkan salah!');
+      return;
+    }
+
+    if (!newPin || newPin.length < 4) {
+      setChangePinError('PIN Baru minimal 4 - 6 digit angka.');
+      return;
+    }
+
+    if (newPin !== confirmPin) {
+      setChangePinError('Konfirmasi PIN Baru tidak cocok.');
+      return;
+    }
+
+    updateUserPin(user.email, newPin);
+    setChangePinSuccess('✓ PIN Keamanan Anda berhasil diperbarui!');
+    setTimeout(() => {
+      setIsChangePinOpen(false);
+      setOldPin('');
+      setNewPin('');
+      setConfirmPin('');
+      setChangePinSuccess('');
+    }, 1500);
   };
   
   const today = new Date().toISOString().split('T')[0];
@@ -189,13 +231,27 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
               </div>
             </div>
 
-            <button
-              onClick={logout}
-              className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
-              title="Keluar (Logout)"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  setIsChangePinOpen(true);
+                  setOldPin(''); setNewPin(''); setConfirmPin('');
+                  setChangePinError(''); setChangePinSuccess('');
+                }}
+                className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors"
+                title="Ganti PIN Keamanan Akun"
+              >
+                <KeyRound className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={logout}
+                className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                title="Keluar (Logout)"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Quick Switch User */}
@@ -272,6 +328,94 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
                   className="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-600/30"
                 >
                   Konfirmasi PIN
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Change PIN Modal */}
+      {isChangePinOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-sm glass-panel p-6 rounded-3xl border border-amber-500/40 bg-slate-900 shadow-2xl space-y-4 animate-scale-in">
+            <div className="flex flex-col items-center text-center space-y-1.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                <KeyRound className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-extrabold text-slate-100">Ganti PIN Keamanan Akun</h3>
+              <p className="text-xs text-slate-400">
+                Perbarui PIN 6-digit untuk akun <strong className="text-amber-300">{user?.full_name}</strong>
+              </p>
+            </div>
+
+            {changePinError && (
+              <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2 animate-shake">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{changePinError}</span>
+              </div>
+            )}
+
+            {changePinSuccess && (
+              <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 animate-scale-in">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{changePinSuccess}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveNewPin} className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">PIN Saat Ini (Lama)</label>
+                <input
+                  type="password"
+                  maxLength={6}
+                  value={oldPin}
+                  onChange={(e) => setOldPin(e.target.value)}
+                  placeholder="******"
+                  required
+                  className="w-full text-center tracking-[0.5em] text-sm font-mono py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">PIN Baru (4-6 Digit)</label>
+                <input
+                  type="password"
+                  maxLength={6}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value)}
+                  placeholder="******"
+                  required
+                  className="w-full text-center tracking-[0.5em] text-sm font-mono py-2 bg-slate-950 border border-slate-800 rounded-xl text-amber-300 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Konfirmasi PIN Baru</label>
+                <input
+                  type="password"
+                  maxLength={6}
+                  value={confirmPin}
+                  onChange={(e) => setConfirmPin(e.target.value)}
+                  placeholder="******"
+                  required
+                  className="w-full text-center tracking-[0.5em] text-sm font-mono py-2 bg-slate-950 border border-slate-800 rounded-xl text-amber-300 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsChangePinOpen(false)}
+                  className="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-xs shadow-md shadow-amber-500/20"
+                >
+                  Simpan PIN Baru ✓
                 </button>
               </div>
             </form>
