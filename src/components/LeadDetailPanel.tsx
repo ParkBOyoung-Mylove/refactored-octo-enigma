@@ -95,7 +95,15 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg glass-panel border-l border-slate-800 shadow-2xl flex flex-col animate-scale-in font-sans">
+    <>
+      {/* Backdrop Overlay */}
+      <div 
+        className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm animate-fade-in cursor-pointer"
+        onClick={onClose}
+      />
+
+      {/* Side Drawer Panel */}
+      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col animate-scale-in font-sans">
       {/* Panel Header */}
       <div className="p-4 border-b border-slate-800 bg-slate-900/60 flex items-start justify-between">
         <div>
@@ -389,5 +397,6 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
         )}
       </div>
     </div>
+    </>
   );
 }
