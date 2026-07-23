@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useAuth } from '../context/AuthContext';
 import { ActivityLog } from '../components/ActivityLog';
@@ -53,12 +54,22 @@ export function Dashboard() {
     saveRoutine({ ...todayRoutine, morningTasks: updatedTasks });
   };
 
+  // Live Clock state for banner
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const fullDateString = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const liveTimeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
   return (
     <div className="font-sans animate-fade-in space-y-6">
       {/* Header Banner */}
       <div className="glass-panel p-6 rounded-3xl border border-slate-800 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1">
               {user?.role === 'superadmin' ? (
                 <span className="text-amber-400 font-extrabold flex items-center gap-1 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">
@@ -74,8 +85,8 @@ export function Dashboard() {
                 </span>
               )}
             </span>
-            <span className="text-xs text-slate-400 font-mono">
-              {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            <span className="text-xs text-slate-400 font-mono flex items-center gap-1 bg-slate-900/60 px-2.5 py-0.5 rounded-full border border-slate-800">
+              <Calendar className="w-3 h-3 text-indigo-400" /> {fullDateString} • <span className="text-amber-300 font-bold">{liveTimeString} WIB</span>
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">

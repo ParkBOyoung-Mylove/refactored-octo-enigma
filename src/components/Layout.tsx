@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { Menu, X, Kanban, Users, Bot, CheckSquare, Search, Home, LogOut, ShieldCheck, User, FileText, BarChart3, Layers, BookOpen, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Menu, X, Kanban, Users, Bot, CheckSquare, Search, Home, LogOut, ShieldCheck, User, FileText, BarChart3, Layers, BookOpen, KeyRound, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { cn } from './ConfirmModal';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useAuth } from '../context/AuthContext';
@@ -118,6 +118,17 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
     { id: 'copilot', label: 'AI Copilot Meeting', icon: Bot, badge: 0 },
     { id: 'guide', label: 'Panduan Visual User', icon: BookOpen, badge: 0 },
   ] as const;
+
+  // Live clock state
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const timeString = currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const dateString = currentTime.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
 
   return (
     <div className="min-h-screen flex bg-slate-950 text-slate-100 font-sans">
@@ -444,6 +455,13 @@ export function Layout({ children, activeModule, setActiveModule }: LayoutProps)
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-3">
+            {/* Live Digital Clock Widget */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs shadow-inner">
+              <Clock className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span className="text-slate-400 font-mono hidden md:inline">{dateString} •</span>
+              <span className="font-mono font-bold text-amber-300 tracking-wider">{timeString} WIB</span>
+            </div>
+
             <NotificationCenter />
           </div>
         </header>
